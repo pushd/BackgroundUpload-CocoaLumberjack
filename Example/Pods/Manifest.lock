@@ -1,0 +1,21 @@
+PODS:
+  - BackgroundUpload-CocoaLumberjack (0.1.0):
+    - CocoaLumberjack
+  - CocoaLumberjack (1.9.2):
+    - CocoaLumberjack/Extensions (= 1.9.2)
+  - CocoaLumberjack/Core (1.9.2)
+  - CocoaLumberjack/Extensions (1.9.2):
+    - CocoaLumberjack/Core
+
+DEPENDENCIES:
+  - BackgroundUpload-CocoaLumberjack (from `../`)
+
+EXTERNAL SOURCES:
+  BackgroundUpload-CocoaLumberjack:
+    :path: ../
+
+SPEC CHECKSUMS:
+  BackgroundUpload-CocoaLumberjack: f97652dbcd6b596e05958d4e9c4a17cad1e07148
+  CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
+
+COCOAPODS: 0.35.0

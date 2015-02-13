@@ -1,0 +1,11 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'BackgroundUpload-CocoaLumberjack', :exclusive => true do
+  pod "BackgroundUpload-CocoaLumberjack", :path => "../"
+end
+
+target 'Tests', :exclusive => true do
+  pod "BackgroundUpload-CocoaLumberjack", :path => "../"
+
+  
+end
