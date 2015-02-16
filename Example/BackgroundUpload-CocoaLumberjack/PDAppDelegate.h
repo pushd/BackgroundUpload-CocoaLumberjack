@@ -10,6 +10,8 @@
 
 @interface PDAppDelegate : UIResponder <UIApplicationDelegate>
 
+extern int const ddLogLevel;
+
 @property (strong, nonatomic) UIWindow *window;
 
 @end

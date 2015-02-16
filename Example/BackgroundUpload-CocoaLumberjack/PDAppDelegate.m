@@ -12,6 +12,8 @@
 #import "DDFileLogger.h"
 #import "PDBackgroundUploadLogFileManager.h"
 
+const int ddLogLevel = LOG_LEVEL_VERBOSE;
+
 @interface PDAppDelegate()
 
 @property (strong, nonatomic) PDBackgroundUploadLogFileManager *fileManager;
