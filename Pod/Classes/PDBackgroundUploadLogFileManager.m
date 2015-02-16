@@ -109,6 +109,7 @@
 
 - (NSString *)filePathForTask:(NSURLSessionTask *)task
 {
+    NSAssert(task.taskDescription, @"taskDescription should contain file path");
     return task.taskDescription;
 }
 
@@ -138,18 +139,15 @@
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
-    [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-        if ([uploadTasks count] == 0) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (self.completionHandler) {
-                    self.completionHandler();
-                    self.completionHandler = nil;
-                }
-            });
-        } else {
-            NSLog(@"BackgroundUploadLogFileManager: did finish but tasks present %@", uploadTasks);
-        }
-    }];
+    // ensure all deletes are complete before calling completion
+    dispatch_async([DDLog loggingQueue], ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.completionHandler) {
+                self.completionHandler();
+                self.completionHandler = nil;
+            }
+        });
+    });
 }
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
