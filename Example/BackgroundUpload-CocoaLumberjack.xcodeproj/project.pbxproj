@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1D39B8CAB7A53852D41E049D /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6E6012CFD5EE51DE04F301F /* libPods-Tests.a */; };
-		253D49C71A92765D00EDD77B /* PDBackgroundUploadLogFileManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 253D49C61A92765D00EDD77B /* PDBackgroundUploadLogFileManagerTests.m */; };
 		3073A1E6C90621F21A8C3C34 /* libPods-BackgroundUpload-CocoaLumberjack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 379898367DA0EF84034AE606 /* libPods-BackgroundUpload-CocoaLumberjack.a */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
@@ -38,7 +37,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		253D49C61A92765D00EDD77B /* PDBackgroundUploadLogFileManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDBackgroundUploadLogFileManagerTests.m; sourceTree = "<group>"; };
 		2587B9BD3F8A6A6181D4A842 /* BackgroundUpload-CocoaLumberjack.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "BackgroundUpload-CocoaLumberjack.podspec"; path = "../BackgroundUpload-CocoaLumberjack.podspec"; sourceTree = "<group>"; };
 		2FE90919C8C0B2508A0C034F /* Pods-BackgroundUpload-CocoaLumberjack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BackgroundUpload-CocoaLumberjack.release.xcconfig"; path = "Pods/Target Support Files/Pods-BackgroundUpload-CocoaLumberjack/Pods-BackgroundUpload-CocoaLumberjack.release.xcconfig"; sourceTree = "<group>"; };
 		379898367DA0EF84034AE606 /* libPods-BackgroundUpload-CocoaLumberjack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BackgroundUpload-CocoaLumberjack.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -173,7 +171,6 @@
 			children = (
 				6003F5BB195388D20070C39A /* Tests.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
-				253D49C61A92765D00EDD77B /* PDBackgroundUploadLogFileManagerTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -375,7 +372,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BC195388D20070C39A /* Tests.m in Sources */,
-				253D49C71A92765D00EDD77B /* PDBackgroundUploadLogFileManagerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
