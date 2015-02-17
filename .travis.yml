@@ -1,10 +1,6 @@
-# references:
-# * http://www.objc.io/issue-6/travis-ci.html
-# * https://github.com/supermarin/xcpretty#usage
-
 language: objective-c
 xcode_sdk: iphonesimulator
 xcode_workspace: Example/BackgroundUpload-CocoaLumberjack.xcworkspace
 xcode_scheme: BackgroundUpload-CocoaLumberjack-Example
 before_script:
-- pod lib lint --quick
+  - pod lib lint --quick
