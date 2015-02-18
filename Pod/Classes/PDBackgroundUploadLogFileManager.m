@@ -8,9 +8,19 @@
 
 #import "PDBackgroundUploadLogFileManager.h"
 
+#ifdef DEBUG
+  #define PDLog(__FORMAT__, ...) NSLog(__FORMAT__, ##__VA_ARGS__)
+#else
+  #define PDLog(__FORMAT__, ...)
+#endif
+
 @interface PDBackgroundUploadLogFileManager()
 
 @property (strong, nonatomic) NSURLRequest *uploadRequest;
+
+// discretionary prevents uploading unless on wi-fi even if log is rolled in foreground
+@property (assign, nonatomic) BOOL discretionary;
+
 @property (strong, nonatomic) NSURLSession *session;
 @property (copy, nonatomic) void(^completionHandler)();
 
@@ -22,25 +32,38 @@
 {
     if ((self = [super init])) {
         _uploadRequest = uploadRequest;
+        _discretionary = YES;
         [self setupSession];
     }
     return self;
 }
 
-- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest logsDirectory:(NSString *)logsDirectory
+- (id)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary
+{
+    if ((self = [super init])) {
+        _uploadRequest = uploadRequest;
+        _discretionary = discretionary;
+        [self setupSession];
+    }
+    return self;
+}
+
+- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary logsDirectory:(NSString *)logsDirectory
 {
     if ((self = [super initWithLogsDirectory:logsDirectory])) {
         _uploadRequest = uploadRequest;
+        _discretionary = discretionary;
         [self setupSession];
     }
     return self;
 }
 
 #if TARGET_OS_IPHONE
-- (instancetype)initWithWithUploadRequest:(NSURLRequest *)uploadRequest logsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel
+- (instancetype)initWithWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary logsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel
 {
     if ((self = [super initWithLogsDirectory:logsDirectory defaultFileProtectionLevel:fileProtectionLevel])) {
         _uploadRequest = uploadRequest;
+        _discretionary = discretionary;
         [self setupSession];
     }
     return self;
@@ -56,13 +79,13 @@
 
 - (void)didArchiveLogFile:(NSString *)logFilePath
 {
-    NSLog(@"BackgroundUploadLogFileManager: didArchiveLogFile: %@", [logFilePath lastPathComponent]);
+    PDLog(@"BackgroundUploadLogFileManager: didArchiveLogFile: %@", [logFilePath lastPathComponent]);
     [self uploadArchivedFiles];
 }
 
 - (void)didRollAndArchiveLogFile:(NSString *)logFilePath
 {
-    NSLog(@"BackgroundUploadLogFileManager: didRollAndArchiveLogFile: %@", [logFilePath lastPathComponent]);
+    PDLog(@"BackgroundUploadLogFileManager: didRollAndArchiveLogFile: %@", [logFilePath lastPathComponent]);
     [self uploadArchivedFiles];
 }
 
@@ -70,8 +93,13 @@
 
 - (void)setupSession
 {
-    NSURLSessionConfiguration *backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[self sessionIdentifier]];
-    backgroundConfiguration.discretionary = YES; // prevent uploading unless on wi-fi even if log is rolled in foreground
+    NSURLSessionConfiguration *backgroundConfiguration;
+    if ([NSURLSessionConfiguration respondsToSelector:@selector(backgroundSessionConfigurationWithIdentifier:)]) {
+        backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[self sessionIdentifier]];
+    } else {
+        backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[self sessionIdentifier]];
+    }
+    backgroundConfiguration.discretionary = self.discretionary;
     self.session = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:self delegateQueue:nil];
 }
 
@@ -103,7 +131,7 @@
 {
     NSURLSessionTask *task = [self.session uploadTaskWithRequest:self.uploadRequest fromFile:[NSURL fileURLWithPath:logFilePath]];
     task.taskDescription = logFilePath;
-    NSLog(@"BackgroundUploadLogFileManager: started uploading: %@", [self filePathForTask:task]);
+    PDLog(@"BackgroundUploadLogFileManager: started uploading: %@", [self filePathForTask:task]);
     [task resume];
 }
 
@@ -124,14 +152,14 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    NSLog(@"BackgroundUploadLogFileManager: task: %@ didCompleteWithError: %@", [self filePathForTask:task], error);
+    PDLog(@"BackgroundUploadLogFileManager: task: %@ didCompleteWithError: %@", [self filePathForTask:task], error);
     
     if (!error) {
         dispatch_async([DDLog loggingQueue], ^{
             NSError *error;
             [[NSFileManager defaultManager] removeItemAtPath:[self filePathForTask:task] error:&error];
             if (error) {
-                NSLog(@"BackgroundUploadLogFileManager: Error deleting file %@: %@", [self filePathForTask:task], error);
+                PDLog(@"BackgroundUploadLogFileManager: Error deleting file %@: %@", [self filePathForTask:task], error);
             }
         });
     }
@@ -152,7 +180,7 @@
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
 {
-    NSLog(@"BackgroundUploadLogFileManager: session: %@ didBecomeInvalidWithError: %@", session, error);
+    PDLog(@"BackgroundUploadLogFileManager: session: %@ didBecomeInvalidWithError: %@", session, error);
     [self setupSession];
 }
 

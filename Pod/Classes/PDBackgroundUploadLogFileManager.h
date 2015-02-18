@@ -13,9 +13,10 @@
 @interface PDBackgroundUploadLogFileManager : DDLogFileManagerDefault<NSURLSessionDelegate,NSURLSessionTaskDelegate>
 
 - (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest;
-- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest logsDirectory:(NSString *)logsDirectory;
+- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary;
+- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary logsDirectory:(NSString *)logsDirectory;
 #if TARGET_OS_IPHONE
-- (instancetype)initWithWithUploadRequest:(NSURLRequest *)uploadRequest logsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel;
+- (instancetype)initWithWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary logsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel;
 #endif
 
 - (NSString *)sessionIdentifier;
