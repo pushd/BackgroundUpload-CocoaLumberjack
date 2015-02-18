@@ -20,6 +20,7 @@ it, simply add the following line to your Podfile:
 
     pod "BackgroundUpload-CocoaLumberjack"
 
+Compatible with CocoaLumberjack 1.x or 2.x.
 Use PDBackgroundUploadLogFileManager as the file manaager for your DDFileLogger,
 passing it a template NSURLRequest whose body will be set to the content of the log files,
 and delegate the application:handleEventsForBackgroundURLSession:completionHandler: method from your application delegate as follows:
