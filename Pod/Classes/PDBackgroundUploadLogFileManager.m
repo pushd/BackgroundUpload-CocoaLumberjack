@@ -70,7 +70,7 @@
 
 - (void)setupSession
 {
-    NSURLSessionConfiguration *backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[self sessionIdentifier]];
+    NSURLSessionConfiguration *backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[self sessionIdentifier]];
     backgroundConfiguration.discretionary = YES; // prevent uploading unless on wi-fi even if log is rolled in foreground
     self.session = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:self delegateQueue:nil];
 }
