@@ -15,7 +15,6 @@ Pod::Spec.new do |s|
 #                      A LogFileManager that uses NSURLSession background transfer to upload files when they roll.
 #                       DESC
   s.homepage         = "https://github.com/pushd/BackgroundUpload-CocoaLumberjack"
-  # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "Eric Jensen" => "ej@pushd.com" }
   s.source           = { :git => "https://github.com/pushd/BackgroundUpload-CocoaLumberjack.git", :tag => s.version.to_s }
@@ -29,7 +28,6 @@ Pod::Spec.new do |s|
     'BackgroundUpload-CocoaLumberjack' => ['Pod/Assets/*.png']
   }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
+  s.public_header_files = 'Pod/Classes/**/*.h'
   s.dependency 'CocoaLumberjack'
 end

@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  BackgroundUpload-CocoaLumberjack: f97652dbcd6b596e05958d4e9c4a17cad1e07148
+  BackgroundUpload-CocoaLumberjack: 25650cd2993612542b3c5149a3ba2c6c0aadbf90
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
 
 COCOAPODS: 0.35.0
