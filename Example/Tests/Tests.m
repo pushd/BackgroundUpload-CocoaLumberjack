@@ -11,6 +11,12 @@
 #import "PDBackgroundUploadLogFileManager.h"
 #import "PDAppDelegate.h"
 
+@interface PDBackgroundUploadLogFileManager (Tests)
+
+@property (weak, nonatomic) id<PDBackgroundUploadLogFileManagerDelegate> delegate;
+
+@end
+
 @interface PDAppDelegate (Tests)
 
 @property (strong, nonatomic) PDBackgroundUploadLogFileManager *fileManager;
@@ -18,7 +24,9 @@
 
 @end
 
-@interface Tests : XCTestCase
+@interface Tests : XCTestCase <PDBackgroundUploadLogFileManagerDelegate>
+
+@property (strong, nonatomic) XCTestExpectation *expectation;
 
 @end
 
@@ -26,28 +34,34 @@
 
 - (void)setUp
 {
+    [self appDelegate].fileManager.delegate = self;
     [self appDelegate].fileLogger.maximumFileSize = 5;
+    [DDLog removeAllLoggers];
+    [DDLog addLogger:[self appDelegate].fileLogger]; // some linking weirdness
     
-    NSArray *fileInfos = [[self appDelegate].fileManager unsortedLogFileInfos];
-    for (DDLogFileInfo *fileInfo in fileInfos) {
-        if (fileInfo.isArchived) {
-            [[NSFileManager defaultManager] removeItemAtPath:fileInfo.filePath error:nil];
+    dispatch_sync([DDLog loggingQueue], ^{
+        NSArray *fileInfos = [[self appDelegate].fileManager unsortedLogFileInfos];
+        for (DDLogFileInfo *fileInfo in fileInfos) {
+            if (fileInfo.isArchived) {
+                [[NSFileManager defaultManager] removeItemAtPath:fileInfo.filePath error:nil];
+            }
         }
-    }
+    });
 }
 
 - (void)testRolling
 {
+    self.expectation = [self expectationWithDescription:@"Should call back delegate method"];
+
     DDLogVerbose(@"12345");
     DDLogVerbose(@"6");
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Should finish on serial logging queue"];
-    dispatch_async([DDLog loggingQueue], ^{
-        dispatch_async([[self appDelegate].fileLogger loggerQueue], ^{
-            [expectation fulfill];
-            XCTAssertEqual(2, [[[self appDelegate].fileManager unsortedLogFilePaths] count], @"Should have rolled a file");
-        });
-    });
-    [self waitForExpectationsWithTimeout:0.1 handler:nil];
+
+    [self waitForExpectationsWithTimeout:1.0 handler:nil];
+}
+
+- (void)attemptingUploadForFilePath:(NSString *)logFilePath
+{
+    [self.expectation fulfill];
 }
 
 - (PDAppDelegate *)appDelegate

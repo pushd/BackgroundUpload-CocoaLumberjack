@@ -21,6 +21,8 @@
 // discretionary prevents uploading unless on wi-fi even if log is rolled in foreground
 @property (assign, nonatomic) BOOL discretionary;
 
+@property (weak, nonatomic) id<PDBackgroundUploadLogFileManagerDelegate> delegate;
+
 @property (strong, nonatomic) NSURLSession *session;
 @property (copy, nonatomic) void(^completionHandler)();
 
@@ -38,32 +40,35 @@
     return self;
 }
 
-- (id)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary
+- (id)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary delegate:(id<PDBackgroundUploadLogFileManagerDelegate>)delegate
 {
     if ((self = [super init])) {
         _uploadRequest = uploadRequest;
         _discretionary = discretionary;
+        _delegate = delegate;
         [self setupSession];
     }
     return self;
 }
 
-- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary logsDirectory:(NSString *)logsDirectory
+- (instancetype)initWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary delegate:(id<PDBackgroundUploadLogFileManagerDelegate>)delegate logsDirectory:(NSString *)logsDirectory
 {
     if ((self = [super initWithLogsDirectory:logsDirectory])) {
         _uploadRequest = uploadRequest;
         _discretionary = discretionary;
+        _delegate = delegate;
         [self setupSession];
     }
     return self;
 }
 
 #if TARGET_OS_IPHONE
-- (instancetype)initWithWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary logsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel
+- (instancetype)initWithWithUploadRequest:(NSURLRequest *)uploadRequest discretionary:(BOOL)discretionary delegate:(id<PDBackgroundUploadLogFileManagerDelegate>)delegate logsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel
 {
     if ((self = [super initWithLogsDirectory:logsDirectory defaultFileProtectionLevel:fileProtectionLevel])) {
         _uploadRequest = uploadRequest;
         _discretionary = discretionary;
+        _delegate = delegate;
         [self setupSession];
     }
     return self;
@@ -133,6 +138,9 @@
     task.taskDescription = logFilePath;
     PDLog(@"BackgroundUploadLogFileManager: started uploading: %@", [self filePathForTask:task]);
     [task resume];
+    if ([self.delegate respondsToSelector:@selector(attemptingUploadForFilePath:)]) {
+        [self.delegate attemptingUploadForFilePath:logFilePath];
+    }
 }
 
 - (NSString *)filePathForTask:(NSURLSessionTask *)task
@@ -152,17 +160,27 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    PDLog(@"BackgroundUploadLogFileManager: task: %@ didCompleteWithError: %@", [self filePathForTask:task], error);
+    NSString *filePath = [self filePathForTask:task];
+    PDLog(@"BackgroundUploadLogFileManager: task: %@ didCompleteWithError: %@", filePath, error);
     
-    if (!error) {
-        dispatch_async([DDLog loggingQueue], ^{
-            NSError *error;
-            [[NSFileManager defaultManager] removeItemAtPath:[self filePathForTask:task] error:&error];
-            if (error) {
-                PDLog(@"BackgroundUploadLogFileManager: Error deleting file %@: %@", [self filePathForTask:task], error);
+    dispatch_async([DDLog loggingQueue], ^{ @autoreleasepool {
+        if (!error) {
+            NSError *deleteError;
+            [[NSFileManager defaultManager] removeItemAtPath:filePath error:&deleteError];
+            if (deleteError) {
+                PDLog(@"BackgroundUploadLogFileManager: Error deleting file %@: %@", filePath, deleteError);
             }
-        });
-    }
+            if ([self.delegate respondsToSelector:@selector(uploadTaskForFilePath:didCompleteWithError:)]) {
+                [self.delegate uploadTaskForFilePath:filePath didCompleteWithError:nil];
+            }
+        } else if ([self.delegate respondsToSelector:@selector(uploadTaskForFilePath:didCompleteWithError:)]) {
+            // only call back with failure if this was the last retry
+            NSArray *fileInfos = [self sortedLogFileInfos];
+            if (self.maximumNumberOfLogFiles <= [fileInfos count] && [[[fileInfos lastObject] filePath] isEqualToString:filePath]) {
+                [self.delegate uploadTaskForFilePath:filePath didCompleteWithError:error];
+            }
+        }
+    }});
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
