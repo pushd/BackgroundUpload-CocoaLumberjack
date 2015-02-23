@@ -9,7 +9,7 @@
 // BackgroundUpload-CocoaLumberjack
 #define COCOAPODS_POD_AVAILABLE_BackgroundUpload_CocoaLumberjack
 #define COCOAPODS_VERSION_MAJOR_BackgroundUpload_CocoaLumberjack 0
-#define COCOAPODS_VERSION_MINOR_BackgroundUpload_CocoaLumberjack 1
+#define COCOAPODS_VERSION_MINOR_BackgroundUpload_CocoaLumberjack 2
 #define COCOAPODS_VERSION_PATCH_BackgroundUpload_CocoaLumberjack 0
 
 // CocoaLumberjack
