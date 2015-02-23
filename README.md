@@ -7,7 +7,7 @@
 
 A CocoaLumberjack log file manager that uses NSURLSession background transfer to upload files when they roll.
 This can be used to integrate with any log aggregation service that accepts the log file as the body of an HTTP request,
-such as https://www.loggly.com, amazon S3, or your own server.
+such as loggly, amazon S3, or your own server.
 
 Uploads are retried everytime another file is rolled (as per DDFileLogger's maximum file size and rolling frequency),
 until the file is no longer available (as per DDLogFileManager's maximum number of log files and disk quota).  Log files
