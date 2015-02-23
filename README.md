@@ -53,6 +53,19 @@ and delegate the application:handleEventsForBackgroundURLSession:completionHandl
 }
 ```
 
+## Loggly integration
+
+The above will work to send plain text logs to loggly simply by replacing the URL with the one from https://www.loggly.com/docs/http-bulk-endpoint  To send JSON format logs that will thereby have their original timestamps respected and zoomable in the loggly UI, also use the following:
+
+```
+pod 'LogglyLogger-CocoaLumberjack/Formatter'
+
+#import "LogglyFormatter.h"
+#import "LogglyFields.h"
+
+[fileLogger setLogFormatter:[[LogglyFormatter alloc] initWithLogglyFieldsDelegate:[LogglyFields new]]];
+```
+
 ## Author
 
 Eric Jensen, ej@pushd.com
@@ -61,3 +74,6 @@ Eric Jensen, ej@pushd.com
 
 BackgroundUpload-CocoaLumberjack is available under the MIT license. See the LICENSE file for more info.
 
+## TODO
+
+Compression:  Loggly doesn't support compression even via Content-Encoding, but it seems like the sane thing to do.  CocoaLumberjack has an example but it's not included in the pod and the DDLogFileManager interface should probably be refactored to delegate rather than require inheritance to be sent didRollAndArchiveLogFile: https://github.com/CocoaLumberjack/CocoaLumberjack/blob/master/Demos/LogFileCompressor/CompressingLogFileManager.m
