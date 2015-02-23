@@ -68,7 +68,7 @@ pod 'LogglyLogger-CocoaLumberjack/Formatter'
 
 ## Discretionary background uploads
 
-Unless you override with initWithUploadRequest:discretionary:delegate:, the default is to set the discretionary flag on all upload tasks.  As per [Apple](https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSURLSessionConfiguration_class/index.html#//apple_ref/occ/instp/NSURLSessionConfiguration/discretionary), this means uploads only happen when the phone is connected to a wifi network and has enough battery.  Therefore, users who never connect to wifi or uninstall your app before they do won't upload any logs, and even those who do will have their logs delayed until they are on wifi.  This is typically an acceptable tradeoff for logs that reduces battery and data usage.
+Unless you override with initWithUploadRequest:discretionary:delegate:, the default is to set the discretionary flag on all upload tasks.  As per [NSURLSessionConfiguration](https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSURLSessionConfiguration_class/index.html#//apple_ref/occ/instp/NSURLSessionConfiguration/discretionary), this means uploads only happen when the phone is connected to a wifi network and has enough battery.  Therefore, users who never connect to wifi or uninstall your app before they do won't upload any logs, and even those who do will have their logs delayed until they are on wifi.  This is typically an acceptable tradeoff for logs that reduces battery and data usage.
 
 ## Author
 
