@@ -14,6 +14,7 @@
 @interface PDBackgroundUploadLogFileManager (Tests)
 
 @property (weak, nonatomic) id<PDBackgroundUploadLogFileManagerDelegate> delegate;
+- (void)uploadFilePath:(NSString *)filePath didCompleteWithError:(NSError *)error;
 
 @end
 
@@ -52,15 +53,21 @@
 - (void)testRolling
 {
     self.expectation = [self expectationWithDescription:@"Should call back delegate method"];
-
-    DDLogVerbose(@"12345");
-    DDLogVerbose(@"6");
-
+    DDLogVerbose(@"123456");
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
 }
 
 - (void)attemptingUploadForFilePath:(NSString *)logFilePath
 {
+    [[self appDelegate].fileManager uploadFilePath:logFilePath didCompleteWithError:[NSError errorWithDomain:@"foo" code:0 userInfo:nil]];
+    XCTAssert([[NSFileManager defaultManager] isReadableFileAtPath:logFilePath]);
+    [[self appDelegate].fileManager uploadFilePath:logFilePath didCompleteWithError:nil];
+}
+
+- (void)uploadTaskForFilePath:(NSString *)logFilePath didCompleteWithError:(NSError *)error
+{
+    XCTAssert(!error);
+    XCTAssert(![[NSFileManager defaultManager] isReadableFileAtPath:logFilePath]);
     [self.expectation fulfill];
 }
 

@@ -84,13 +84,13 @@
 
 - (void)didArchiveLogFile:(NSString *)logFilePath
 {
-    PDLog(@"BackgroundUploadLogFileManager: didArchiveLogFile: %@", [logFilePath lastPathComponent]);
+    PDLog(@"BackgroundUploadLogFileManager: didArchiveLogFile: %@", logFilePath);
     [self uploadArchivedFiles];
 }
 
 - (void)didRollAndArchiveLogFile:(NSString *)logFilePath
 {
-    PDLog(@"BackgroundUploadLogFileManager: didRollAndArchiveLogFile: %@", [logFilePath lastPathComponent]);
+    PDLog(@"BackgroundUploadLogFileManager: didRollAndArchiveLogFile: %@", logFilePath);
     [self uploadArchivedFiles];
 }
 
@@ -126,7 +126,11 @@
             }
             
             for (NSString *filePath in filesToUpload) {
-                [self uploadLogFile:filePath];
+                if ([[NSFileManager defaultManager] isReadableFileAtPath:filePath]) {
+                    [self uploadLogFile:filePath];
+                } else {
+                    NSAssert(NO, @"file that came from log file infos should be readable");
+                }
             }
         }});
     }];
@@ -160,8 +164,12 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    NSString *filePath = [self filePathForTask:task];
-    PDLog(@"BackgroundUploadLogFileManager: task: %@ didCompleteWithError: %@", filePath, error);
+    [self uploadFilePath:[self filePathForTask:task] didCompleteWithError:error];
+}
+
+- (void)uploadFilePath:(NSString *)filePath didCompleteWithError:(NSError *)error
+{
+    PDLog(@"BackgroundUploadLogFileManager: upload: %@ didCompleteWithError: %@", filePath, error);
     
     dispatch_async([DDLog loggingQueue], ^{ @autoreleasepool {
         if (!error) {
@@ -174,9 +182,13 @@
                 [self.delegate uploadTaskForFilePath:filePath didCompleteWithError:nil];
             }
         } else if ([self.delegate respondsToSelector:@selector(uploadTaskForFilePath:didCompleteWithError:)]) {
+            NSArray *filePaths = [self sortedLogFilePaths];
+            NSUInteger i = [filePaths indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                return [filePath isEqualToString:obj];
+            }];
+            
             // only call back with failure if this was the last retry
-            NSArray *fileInfos = [self sortedLogFileInfos];
-            if (self.maximumNumberOfLogFiles <= [fileInfos count] && [[[fileInfos lastObject] filePath] isEqualToString:filePath]) {
+            if (i == NSNotFound || i >= self.maximumNumberOfLogFiles - 1) {
                 [self.delegate uploadTaskForFilePath:filePath didCompleteWithError:error];
             }
         }

@@ -12,8 +12,13 @@
 
 @protocol PDBackgroundUploadLogFileManagerDelegate <NSObject>
 @optional
+
+// called for each retry
 - (void)attemptingUploadForFilePath:(NSString *)logFilePath;
+
+// called once upon final success or failure
 - (void)uploadTaskForFilePath:(NSString *)logFilePath didCompleteWithError:(NSError *)error;
+
 @end
 
 @interface PDBackgroundUploadLogFileManager : DDLogFileManagerDefault<NSURLSessionDelegate,NSURLSessionTaskDelegate>
