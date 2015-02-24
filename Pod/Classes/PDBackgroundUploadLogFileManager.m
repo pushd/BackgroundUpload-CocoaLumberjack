@@ -142,8 +142,8 @@
     [request setValue:[logFilePath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]] forHTTPHeaderField:@"X-BackgroundUpload-File"];
 
     NSURLSessionTask *task = [self.session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:logFilePath]];
+    PDLog(@"BackgroundUploadLogFileManager: started uploading: %@", [self filePathForTask:task]); // test decoding header
     task.taskDescription = logFilePath;
-    PDLog(@"BackgroundUploadLogFileManager: started uploading: %@", [self filePathForTask:task]);
     [task resume];
     if ([self.delegate respondsToSelector:@selector(attemptingUploadForFilePath:)]) {
         [self.delegate attemptingUploadForFilePath:logFilePath];
@@ -157,7 +157,6 @@
     if (task.taskDescription) {
         return task.taskDescription;
     } else {
-        PDLog(@"taskDescription missing file path for task %@", task);
         NSString *value = [[task.currentRequest valueForHTTPHeaderField:@"X-BackgroundUpload-File"] stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
         NSAssert(value, @"header must contain file path for task %@", task);
         return value;
