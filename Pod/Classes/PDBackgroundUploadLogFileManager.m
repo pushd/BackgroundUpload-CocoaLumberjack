@@ -138,7 +138,10 @@
 
 - (void)uploadLogFile:(NSString *)logFilePath
 {
-    NSURLSessionTask *task = [self.session uploadTaskWithRequest:self.uploadRequest fromFile:[NSURL fileURLWithPath:logFilePath]];
+    NSMutableURLRequest *request = [self.uploadRequest mutableCopy];
+    [request setValue:[logFilePath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]] forHTTPHeaderField:@"X-BackgroundUpload-File"];
+
+    NSURLSessionTask *task = [self.session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:logFilePath]];
     task.taskDescription = logFilePath;
     PDLog(@"BackgroundUploadLogFileManager: started uploading: %@", [self filePathForTask:task]);
     [task resume];
@@ -149,8 +152,16 @@
 
 - (NSString *)filePathForTask:(NSURLSessionTask *)task
 {
-    NSAssert(task.taskDescription, @"taskDescription should contain file path");
-    return task.taskDescription;
+    // internets seem to suggest taskDescription is persisted, but in practice we see it coming back nil sometimes:
+    // http://stackoverflow.com/questions/24500545/checking-which-kind-of-nsurlsessiontask-occurred
+    if (task.taskDescription) {
+        return task.taskDescription;
+    } else {
+        PDLog(@"taskDescription missing file path for task %@", task);
+        NSString *value = [[task.currentRequest valueForHTTPHeaderField:@"X-BackgroundUpload-File"] stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+        NSAssert(value, @"header must contain file path for task %@", task);
+        return value;
+    }
 }
 
 #pragma mark - app delegate forwarding
