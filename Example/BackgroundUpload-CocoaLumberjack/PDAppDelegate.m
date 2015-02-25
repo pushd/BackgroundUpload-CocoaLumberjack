@@ -37,7 +37,9 @@ const int ddLogLevel = LOG_LEVEL_VERBOSE;
 							
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
 {
-    [self.fileManager handleEventsForBackgroundURLSession:completionHandler];
+    if ([[self.fileManager sessionIdentifier] isEqualToString:identifier]) {
+        [self.fileManager handleEventsForBackgroundURLSession:completionHandler];
+    }
 }
 
 @end
