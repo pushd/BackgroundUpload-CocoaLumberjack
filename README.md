@@ -70,7 +70,11 @@ pod 'LogglyLogger-CocoaLumberjack/Formatter'
 
 ## Discretionary background uploads
 
-Unless you override using initWithUploadRequest:discretionary:delegate:, the default is to set the discretionary flag on all upload tasks.  As per [NSURLSessionConfiguration](https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSURLSessionConfiguration_class/index.html#//apple_ref/occ/instp/NSURLSessionConfiguration/discretionary), this means uploads only happen when connected to a wifi network with enough battery.  Therefore, users who never connect to wifi or uninstall your app before they do won't upload any logs, and even those who do will have their logs delayed until they are on wifi.  This is typically an acceptable tradeoff for logs that reduces battery and data usage.
+Unless you override using initWithUploadRequest:discretionary:delegate:, the default is to set the discretionary flag on all upload tasks.  As per [NSURLSessionConfiguration](https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSURLSessionConfiguration_class/index.html#//apple_ref/occ/instp/NSURLSessionConfiguration/discretionary), this means uploads only happen when connected to a wifi network with enough battery.  Therefore, users who never connect to wifi or uninstall your app before they do won't upload any logs, and even those who do will have their logs delayed until they are on wifi.  This is typically an acceptable tradeoff for logs that reduces battery and data usage.  If you implement the delegate protocol, you'll see users who keep the app but don't connect to wifi for your maximum log retention time call back with Error Domain=NSPOSIXErrorDomain Code=2 "The operation couldn’t be completed. No such file or directory"
+
+## Battery usage
+
+We ran our app which uses background location on two test iphone 5s that we carried together, one with this pod uploading to loggly and one without it, barely unlocking them from 100% charge until they powered down so we could isolate background battery usage (even though foreground usage of the phone typically dominates).  The difference between uploading logs and not was within the noise:  ~4% in terms of both hours of battery life and reported battery usage in settings.  Over the course of about 6 days, it logged about 10,000 lines (less than 2MB total) and probably uploaded on 10 different occasions.  Cellular data usage was identical, confirming it did indeed only upload on wifi.  
 
 ## Author
 
