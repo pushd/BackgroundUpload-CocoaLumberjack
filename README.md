@@ -37,6 +37,8 @@ and delegate the application:handleEventsForBackgroundURLSession:completionHandl
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // WARNING: to minimize battery usage, avoid energy intensive operations such as network requests from controllers
+    //          when launched in UIApplicationStateBackground in response to log uploads until applicationDidBecomeActive
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:3000/logs"]];
     [request setHTTPMethod:@"POST"];
 
@@ -74,7 +76,7 @@ Unless you override using initWithUploadRequest:discretionary:delegate:, the def
 
 ## Battery usage
 
-We ran our app which uses background location on two test iphone 5s that we carried together, one with this pod uploading to loggly and one without it, barely unlocking them from 100% charge until they powered down so we could isolate background battery usage (even though foreground usage of the phone typically dominates).  The difference between uploading logs and not was within the noise:  ~4% in terms of both hours of battery life and reported battery usage in settings.  Over the course of about 6 days, it logged about 10,000 lines (less than 2MB total) and probably uploaded on 10 different occasions.  Cellular data usage was identical, confirming it did indeed only upload on wifi.  
+We ran our app which uses background location on two test iphone 5s that we carried together, one with this pod uploading to loggly and one without it, barely unlocking them from 100% charge until they powered down so we could isolate background battery usage (even though foreground usage of the phone typically dominates).  The difference between uploading logs and not was within the noise:  ~4% in terms of both hours of battery life and reported battery usage in settings.  Over the course of about 6 days, it logged about 10,000 lines (less than 2MB total) and probably uploaded on 10 different occasions.  Cellular data usage was identical, confirming it did indeed only upload on wifi.
 
 ## Author
 

@@ -9,8 +9,8 @@
 
 Pod::Spec.new do |s|
   s.name             = "BackgroundUpload-CocoaLumberjack"
-  s.version          = "0.3.0"
-  s.summary          = "A LogFileManager that uses NSURLSession background transfer to upload files when they roll"
+  s.version          = "0.3.1"
+  s.summary          = "Remote logging via NSURLSession transfer to upload NSLog logger logs to an HTTP server such as loggly."
 #  s.description      = <<-DESC
 #                      A LogFileManager that uses NSURLSession background transfer to upload files when they roll.
 #                       DESC
