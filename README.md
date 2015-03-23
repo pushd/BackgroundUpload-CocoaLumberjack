@@ -88,4 +88,4 @@ BackgroundUpload-CocoaLumberjack is available under the MIT license. See the LIC
 
 ## TODO
 
-Compression:  Loggly doesn't support compression even via Content-Encoding, but it seems like the sane thing to do.  CocoaLumberjack has an example but it's not included in the pod and the DDLogFileManager interface should probably be refactored to delegate rather than require inheritance to be sent didRollAndArchiveLogFile: https://github.com/CocoaLumberjack/CocoaLumberjack/blob/master/Demos/LogFileCompressor/CompressingLogFileManager.m
+Compression:  Loggly doesn't support compression even via Content-Encoding, but it seems like the sane thing to do.  CocoaLumberjack has an example but it's not included in the pod and the DDLogFileManager interface should probably be refactored to delegate rather than require inheritance to be sent didRollAndArchiveLogFile: [CompressingLogFileManager](https://github.com/CocoaLumberjack/CocoaLumberjack/blob/master/Demos/LogFileCompressor/CompressingLogFileManager.m)
