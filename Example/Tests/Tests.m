@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#define DD_LEGACY_MACROS 0
 #import "DDLog.h"
 #import "PDBackgroundUploadLogFileManager.h"
 #import "PDAppDelegate.h"

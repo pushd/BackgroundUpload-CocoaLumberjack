@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#define DD_LEGACY_MACROS 0
 #import "DDLog.h"
 #import "DDFileLogger.h"
 
