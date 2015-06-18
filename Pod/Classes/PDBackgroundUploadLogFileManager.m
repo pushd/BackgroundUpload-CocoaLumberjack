@@ -98,8 +98,7 @@
 
 - (void)setupSession
 {
-    // on nsurlsessiond crashes, sessionWithConfiguration can block for a long time
-    dispatch_async([DDLog loggingQueue], ^{
+    void (^block)() = ^{
         NSURLSessionConfiguration *backgroundConfiguration;
         if ([NSURLSessionConfiguration respondsToSelector:@selector(backgroundSessionConfigurationWithIdentifier:)]) {
             backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[self sessionIdentifier]];
@@ -108,7 +107,15 @@
         }
         backgroundConfiguration.discretionary = self.discretionary;
         self.session = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:self delegateQueue:nil];
-    });
+    };
+    
+    // on nsurlsessiond crashes, sessionWithConfiguration can block for a long time,
+    // but from the background make sure we set up synhronously in didFinishLaunchingWithOptions
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        dispatch_sync([DDLog loggingQueue], block);
+    } else {
+        dispatch_async([DDLog loggingQueue], block);
+    }
 }
 
 // retries any files that may have errored
