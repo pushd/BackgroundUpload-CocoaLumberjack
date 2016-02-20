@@ -9,8 +9,7 @@
 #import "PDAppDelegate.h"
 
 #define DD_LEGACY_MACROS 0
-#import "DDLog.h"
-#import "DDFileLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import "PDBackgroundUploadLogFileManager.h"
 
 const int ddLogLevel = LOG_LEVEL_VERBOSE;

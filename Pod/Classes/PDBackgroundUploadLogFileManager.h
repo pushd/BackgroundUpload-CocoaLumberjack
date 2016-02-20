@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #define DD_LEGACY_MACROS 0
-#import "DDLog.h"
-#import "DDFileLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 /**
  Optional delegate to notify about uploads
