@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2015, Deusty, LLC
+// Copyright (c) 2010-2016, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -81,7 +81,7 @@
     __block NSString *line = logMessage->_message;
 
     dispatch_sync(_queue, ^{
-        for (id<DDLogFormatter> formatter in _formatters) {
+        for (id<DDLogFormatter> formatter in self->_formatters) {
             DDLogMessage *message = [self logMessageForLine:line originalMessage:logMessage];
             line = [formatter formatLogMessage:message];
 
@@ -107,7 +107,7 @@
     __block NSArray *formatters;
 
     dispatch_sync(_queue, ^{
-        formatters = [_formatters copy];
+        formatters = [self->_formatters copy];
     });
 
     return formatters;
@@ -115,19 +115,19 @@
 
 - (void)addFormatter:(id<DDLogFormatter>)formatter {
     dispatch_barrier_async(_queue, ^{
-        [_formatters addObject:formatter];
+        [self->_formatters addObject:formatter];
     });
 }
 
 - (void)removeFormatter:(id<DDLogFormatter>)formatter {
     dispatch_barrier_async(_queue, ^{
-        [_formatters removeObject:formatter];
+        [self->_formatters removeObject:formatter];
     });
 }
 
 - (void)removeAllFormatters {
     dispatch_barrier_async(_queue, ^{
-        [_formatters removeAllObjects];
+        [self->_formatters removeAllObjects];
     });
 }
 
@@ -135,7 +135,7 @@
     __block BOOL hasFormatter;
 
     dispatch_sync(_queue, ^{
-        hasFormatter = [_formatters containsObject:formatter];
+        hasFormatter = [self->_formatters containsObject:formatter];
     });
 
     return hasFormatter;
