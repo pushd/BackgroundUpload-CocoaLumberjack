@@ -1,13 +1,12 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-target 'BackgroundUpload-CocoaLumberjack', :exclusive => true do
+target 'BackgroundUpload-CocoaLumberjack' do
   pod "BackgroundUpload-CocoaLumberjack", :path => "../"
   pod "CocoaLumberjack"
   
-  target 'Tests', :exclusive => true do
-      
-  end
-  
+  target 'Tests' do
+     inherit! :search_paths 
+  end  
 end
 
 

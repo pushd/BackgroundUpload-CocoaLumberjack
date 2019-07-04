@@ -12,7 +12,7 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import "PDBackgroundUploadLogFileManager.h"
 
-const int ddLogLevel = LOG_LEVEL_VERBOSE;
+const int ddLogLevel = DDLogLevelVerbose;
 
 @interface PDAppDelegate()
 
